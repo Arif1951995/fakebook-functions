@@ -120,8 +120,19 @@ exports.getAuthenticatedUser = (req, res) => {
         data.forEach(doc => {
           userData.likes.push(doc.data())
         })
+        return db.collection(`notifications`).where(`recipient`, '==', req.user.handle)
+        
+        .limit(10).get()
+      })
+      .then(data => {
+        userData.notifications = [];
+        data.forEach(doc => {
+          userData.notifications.push({
+            notificationId: doc.id,
+            ...doc.data()
+          })
+        })
         return res.json(userData)
-
       })
       .catch(err => {
         console.error(err)
@@ -179,6 +190,36 @@ exports.uploadImage = (req, res) => {
   busboy.end(req.rawBody);
 };
 
+exports.getUserDetails = (req, res) => {
+  let userData = {};
+  db.doc(`/users/${req.params.handle}`).get()
+  .then(doc => {
+    console.log(doc.data())
+    if(doc.exists) {
+      userData.user = doc.data();
+      return db.collection(`posts`).where('userHandle', '==', req.params.handle)
+      .orderBy('createdAt', 'desc')
+      .get()
+    }else {
+      return res.status(404).json({error: "user not found"})
+    }
+  })
+  .then(data => {
+    userData.posts = [];
+    data.forEach(doc => {
+      userData.posts.push({
+        postId: doc.id,
+        ...doc.data()
+      })
+    })
+    return res.json(userData)
+
+  })
+.catch(err => {
+  console.error(err);
+  return res.status(500).json({error: err.code})
+})
+}
 
 
 
