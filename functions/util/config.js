@@ -8,3 +8,5 @@ module.exports = {
     appId: "1:393424260470:web:776b00ca1fbe601c3bfe57",
     measurementId: "G-L26Z7RJDBL"
   };
+
+  // if request.time < timestamp.date(2019, 12, 16)

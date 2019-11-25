@@ -10,8 +10,10 @@ exports.getAllPosts = (req, res) => {
           postId: doc.id,
           ...doc.data()
         });
+        console.log(doc.data())
       });
       console.log(posts);
+    
       return res.json(posts);
     })
     .catch(err => console.error(err));
@@ -19,7 +21,7 @@ exports.getAllPosts = (req, res) => {
 
 exports.postOnePost = (req, res) => {
   if (req.body.body.trim() === "")
-    return res.status(400).json({ body: "body must not be empty" });
+    return res.status(400).json({ comment: "comment must not empty" });
 
   const newPost = {
     body: req.body.body,
@@ -77,7 +79,7 @@ exports.commentOnPost = (req, res) => {
     createdAt: new Date().toISOString(),
     postId: req.params.postId,
     userHandle: req.user.handle,
-    userImage: req.user.imageUrl
+    imageUrl: req.user.imageUrl
   };
   db.doc(`/posts/${req.params.postId}`)
     .get()
@@ -213,3 +215,4 @@ exports.deletePost = (req, res) => {
     }
   })
 }
+
